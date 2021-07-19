@@ -121,6 +121,8 @@ combo_pd = pd.read_csv(data_path+'bio-decagon-combo.csv')
 ppi_pd = pd.read_csv(data_path+'bio-decagon-ppi.csv')
 tarAll_pd = pd.read_csv(data_path+'bio-decagon-targets-all.csv')
 
+
+
 # build vocab
 
 
@@ -133,8 +135,9 @@ def build_vocab(words):
 
 gene_list = list(ppi_pd['Gene 1'].unique()) + list(ppi_pd['Gene 2'].unique())
 drug_list = list(combo_pd['STITCH 1'].unique()) + list(combo_pd['STITCH 2'].unique())
-gene_list = gene_list[:1000]
-drug_list = drug_list[:1000]
+
+# gene_list = gene_list[:1000]
+# drug_list = drug_list[:1000]
 gene_vocab = build_vocab(gene_list)
 drug_vocab = build_vocab(drug_list)
 
@@ -156,6 +159,8 @@ def pk_load(file_path):
         return pickle.load(open(file_path, 'rb'))
     else:
         return None
+
+# TODO: # of gene unmatch
 
 ################# build gene-gene net #################
 gene1_list, gene2_list = ppi_pd['Gene 1'].tolist(), ppi_pd['Gene 2'].tolist()
@@ -186,8 +191,9 @@ for u, v in zip(stitch_list, gene_list):
     gene_idx_list.append(v)
 gene_drug_adj = sp.csr_matrix((data_list, (gene_idx_list, drug_idx_list)))
 drug_gene_adj = gene_drug_adj.transpose(copy=True)
+print("gene_drug_adj" , gene_drug_adj.shape)
 
-# logging.info('gene_drug_adj: {}'.format(gene_drug_adj.shape))
+#logging.info('gene_drug_adj: {}'.format(gene_drug_adj.shape))
 # logging.info('drug_gene_adj: {}'.format(drug_gene_adj.shape))
 # tv, tu = 219, 5618
 # logging.info('In gene-drug adj: {}'.format(gene_drug_adj[tu, tv]))
@@ -216,6 +222,9 @@ for key, value in se_dict.items():
     # print('drug-drug network: {}\tedge number: {}'.format(drug_drug_adj.shape, drug_drug_adj.nnz))
 logging.info('{} adjs with edges >= 500'.format(1098))
 
+print("drug_drug_adj", drug_drug_adj.shape)
+print("gene_adj", gene_adj.shape)
+
 drug_drug_adj_list = sorted(drug_drug_adj_list, key=lambda x: x.nnz)[::-1][:964]
 drug_drug_adj_list = drug_drug_adj_list[:10]
 # drug_degree_list = map(lambda x: x.sum(axis=0).squeeze(), drug_drug_adj_list)
@@ -226,6 +235,13 @@ for i in range(10):
                                                 np.sum(drug_degrees_list[i])))
 print()
 print('Done data loading')
+
+
+print("=" * 40)
+print("THIS!")
+print(drug_drug_adj_list)
+print(len(drug_degrees_list))
+print("=" * 40)
 
 # data representation
 adj_mats_orig = {

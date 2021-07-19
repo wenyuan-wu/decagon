@@ -135,6 +135,16 @@ for i in range(n_drugdrug_rel_types):
     drug_drug_adj_list.append(sp.csr_matrix(mat))
 drug_degrees_list = [np.array(drug_adj.sum(axis=0)).squeeze() for drug_adj in drug_drug_adj_list]
 
+print("=" * 40)
+print("THIS!")
+print(drug_drug_adj_list)
+print(len(drug_degrees_list))
+
+print("drug_drug_adj", drug_gene_adj.shape)
+print("gene_adj", gene_adj.shape)
+
+print("=" * 40)
+
 
 # data representation
 adj_mats_orig = {
