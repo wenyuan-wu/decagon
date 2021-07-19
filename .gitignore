@@ -104,5 +104,7 @@ ENV/
 .idea/
 
 # data
-data/
+data/*
 
+# not to ignore
+!data/data_download.sh

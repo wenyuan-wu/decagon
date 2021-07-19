@@ -9,30 +9,21 @@ import tensorflow as tf
 import numpy as np
 import networkx as nx
 import scipy.sparse as sp
-import pandas as pd
 from sklearn import metrics
 
 from decagon.deep.optimizer import DecagonOptimizer
 from decagon.deep.model import DecagonModel
 from decagon.deep.minibatch import EdgeMinibatchIterator
 from decagon.utility import rank_metrics, preprocessing
-import logging
-from tqdm import tqdm
-import pickle
-from collections import defaultdict
-
-logger = logging.getLogger(__name__)
-logging.basicConfig(level=logging.INFO, format='%(levelname)s-%(message)s')
-
 
 # Train on CPU (hide GPU) due to memory constraints
-# os.environ['CUDA_VISIBLE_DEVICES'] = ""
+os.environ['CUDA_VISIBLE_DEVICES'] = ""
 
 # Train on GPU
-os.environ["CUDA_DEVICE_ORDER"] = 'PCI_BUS_ID'
-os.environ["CUDA_VISIBLE_DEVICES"] = '0'
-config = tf.ConfigProto()
-config.gpu_options.allow_growth = True
+# os.environ["CUDA_DEVICE_ORDER"] = 'PCI_BUS_ID'
+# os.environ["CUDA_VISIBLE_DEVICES"] = '0'
+# config = tf.ConfigProto()
+# config.gpu_options.allow_growth = True
 
 np.random.seed(0)
 
@@ -45,8 +36,7 @@ np.random.seed(0)
 
 def get_accuracy_scores(edges_pos, edges_neg, edge_type):
     feed_dict.update({placeholders['dropout']: 0})
-    feed_dict.update(
-        {placeholders['batch_edge_type_idx']: minibatch.edge_type2idx[edge_type]})
+    feed_dict.update({placeholders['batch_edge_type_idx']: minibatch.edge_type2idx[edge_type]})
     feed_dict.update({placeholders['batch_row_edge_type']: edge_type[0]})
     feed_dict.update({placeholders['batch_col_edge_type']: edge_type[1]})
     rec = sess.run(opt.predictions, feed_dict=feed_dict)
@@ -62,8 +52,7 @@ def get_accuracy_scores(edges_pos, edges_neg, edge_type):
     for u, v in edges_pos[edge_type[:2]][edge_type[2]]:
         score = sigmoid(rec[u, v])
         preds.append(score)
-        assert adj_mats_orig[edge_type[:2]
-                             ][edge_type[2]][u, v] == 1, 'Problem 1'
+        assert adj_mats_orig[edge_type[:2]][edge_type[2]][u,v] == 1, 'Problem 1'
 
         actual.append(edge_ind)
         predicted.append((score, edge_ind))
@@ -73,8 +62,7 @@ def get_accuracy_scores(edges_pos, edges_neg, edge_type):
     for u, v in edges_neg[edge_type[:2]][edge_type[2]]:
         score = sigmoid(rec[u, v])
         preds_neg.append(score)
-        assert adj_mats_orig[edge_type[:2]
-                             ][edge_type[2]][u, v] == 0, 'Problem 0'
+        assert adj_mats_orig[edge_type[:2]][edge_type[2]][u,v] == 0, 'Problem 0'
 
         predicted.append((score, edge_ind))
         edge_ind += 1
@@ -82,8 +70,7 @@ def get_accuracy_scores(edges_pos, edges_neg, edge_type):
     preds_all = np.hstack([preds, preds_neg])
     preds_all = np.nan_to_num(preds_all)
     labels_all = np.hstack([np.ones(len(preds)), np.zeros(len(preds_neg))])
-    predicted = list(
-        zip(*sorted(predicted, reverse=True, key=itemgetter(0))))[1]
+    predicted = list(zip(*sorted(predicted, reverse=True, key=itemgetter(0))))[1]
 
     roc_sc = metrics.roc_auc_score(labels_all, preds_all)
     aupr_sc = metrics.average_precision_score(labels_all, preds_all)
@@ -103,129 +90,56 @@ def construct_placeholders(edge_types):
     }
     placeholders.update({
         'adj_mats_%d,%d,%d' % (i, j, k): tf.sparse_placeholder(tf.float32)
-        for i, j in edge_types for k in range(edge_types[i, j])})
+        for i, j in edge_types for k in range(edge_types[i,j])})
     placeholders.update({
         'feat_%d' % i: tf.sparse_placeholder(tf.float32)
         for i, _ in edge_types})
     return placeholders
 
+###########################################################
+#
+# Load and preprocess data (This is a dummy toy example!)
+#
+###########################################################
 
-""" Generate real dataset
-"""
-# paramter
-val_test_size = 0.0001
+####
+# The following code uses artificially generated and very small networks.
+# Expect less than excellent performance as these random networks do not have any interesting structure.
+# The purpose of main.py is to show how to use the code!
+#
+# All preprocessed datasets used in the drug combination study are at: http://snap.stanford.edu/decagon:
+# (1) Download datasets from http://snap.stanford.edu/decagon to your local machine.
+# (2) Replace dummy toy datasets used here with the actual datasets you just downloaded.
+# (3) Train & test the model.
+####
+
+val_test_size = 0.05
+
+from decagon_load import *
 
 # read file
-data_path = 'data/'
-combo_pd = pd.read_csv(data_path+'bio-decagon-combo.csv')
-ppi_pd = pd.read_csv(data_path+'bio-decagon-ppi.csv')
-tarAll_pd = pd.read_csv(data_path+'bio-decagon-targets-all.csv')
+combo_pd, ppi_pd, tarAll_pd = load_data()
+  
+drug_vocab = build_vocab(list(combo_pd['STITCH 1'].unique()) + list(combo_pd['STITCH 2'].unique()))
+n_drugs = drug_size = len(drug_vocab)
+print('size of drug vocab: {}'.format(drug_size))
+  
+gene_vocab = build_vocab(list(ppi_pd['Gene 1'].unique()) + list(ppi_pd['Gene 2'].unique()))
+n_genes = gene_size = len(gene_vocab)
+print('size of gene vocab: {}'.format(gene_size))
 
-# build vocab
+se_vocab = build_vocab(combo_pd['Polypharmacy Side Effect'].tolist())
+n_drugdrug_rel_types = 964
+print('size of side effect vocab: {}'.format(len(se_vocab)))
+  
+gene_adj, gene_degrees, gene_drug_adj, drug_gene_adj, drug_drug_adj_list, drug_degrees_list = \
+build_adj(combo_pd, ppi_pd, tarAll_pd, drug_vocab, gene_vocab, se_vocab)
 
-
-def build_vocab(words):
-    vocab = defaultdict(int)
-    for word in words:
-        if word not in vocab.keys():
-            vocab[word] = len(vocab)
-    return vocab
-
-gene_list = list(ppi_pd['Gene 1'].unique()) + list(ppi_pd['Gene 2'].unique())
-drug_list = list(combo_pd['STITCH 1'].unique()) + list(combo_pd['STITCH 2'].unique())
-gene_list = gene_list[:1000]
-drug_list = drug_list[:1000]
-gene_vocab = build_vocab(gene_list)
-drug_vocab = build_vocab(drug_list)
-
-# stat
-n_genes = len(gene_vocab)
-n_drugs = len(drug_vocab)
-n_drugdrug_rel_types = len(combo_pd['Polypharmacy Side Effect'].unique())
-print('# of gene %d' % n_genes)
-print('# of drug %d' % n_drugs)
-print('# of rel_types %d' % n_drugdrug_rel_types)
-
-
-def pk_save(obj, file_path):
-    return pickle.dump(obj, open(file_path, 'wb'))
-
-
-def pk_load(file_path):
-    if os.path.exists(file_path):
-        return pickle.load(open(file_path, 'rb'))
-    else:
-        return None
-
-################# build gene-gene net #################
-gene1_list, gene2_list = ppi_pd['Gene 1'].tolist(), ppi_pd['Gene 2'].tolist()
-data_list, gene_idx1_list, gene_idx2_list = [], [], []
-for u, v in zip(gene1_list, gene2_list):
-    u, v = gene_vocab.get(u, -1), gene_vocab.get(v, -1)
-    if u == -1 or v == -1:
-        continue
-    data_list.extend([1, 1])
-    gene_idx1_list.extend([u, v])
-    gene_idx2_list.extend([v, u])
-gene_adj = sp.csr_matrix((data_list, (gene_idx1_list, gene_idx2_list)))
-print('gene-gene / protein-protein adj: {}\t{}\tnumber of edges: {}'.format(type(gene_adj), gene_adj.shape,
-                                                                            gene_adj.nnz))
-logging.info('{} --- {}'.format(gene_adj[u, v], gene_adj[v, u]))
-gene_degrees = np.array(gene_adj.sum(axis=0)).squeeze()
-print()
-
-################# build gene-drug net #################
-stitch_list, gene_list = tarAll_pd['STITCH'].tolist(), tarAll_pd['Gene'].tolist()
-data_list, drug_idx_list, gene_idx_list = [], [], []
-for u, v in zip(stitch_list, gene_list):
-    u, v = drug_vocab.get(u, -1), gene_vocab.get(v, -1)
-    if u == -1 or v == -1:
-        continue
-    data_list.append(1)
-    drug_idx_list.append(u)
-    gene_idx_list.append(v)
-gene_drug_adj = sp.csr_matrix((data_list, (gene_idx_list, drug_idx_list)))
-drug_gene_adj = gene_drug_adj.transpose(copy=True)
-
-# logging.info('gene_drug_adj: {}'.format(gene_drug_adj.shape))
-# logging.info('drug_gene_adj: {}'.format(drug_gene_adj.shape))
-# tv, tu = 219, 5618
-# logging.info('In gene-drug adj: {}'.format(gene_drug_adj[tu, tv]))
-# logging.info('In drug-gene adj: {}'.format(drug_gene_adj[tv, tu]))
-# print()
-
-################# build drug-drug net #################
-drug_drug_adj_list = []
-drug1_list, drug2_list, se_list = combo_pd['STITCH 1'].tolist(), combo_pd['STITCH 2'].tolist(), combo_pd[
-    'Polypharmacy Side Effect'].tolist()
-se_dict = {}
-for u, v, se in zip(drug1_list, drug2_list, se_list):
-    u, v = drug_vocab.get(u, -1), drug_vocab.get(v, -1)
-    if u == -1 or v == -1:
-        continue
-    if se not in se_dict:
-        se_dict[se] = {'row': [], 'col': [], 'data': []}
-    se_dict[se]['row'].extend([u, v])
-    se_dict[se]['col'].extend([v, u])
-    se_dict[se]['data'].extend([1, 1])
-
-for key, value in se_dict.items():
-    drug_drug_adj = sp.csr_matrix((value['data'], (value['row'], value['col'])), shape=(n_drugs, n_drugs))
-    drug_drug_adj_list.append(drug_drug_adj)
-    # print('Side Effect: {}'.format(key))
-    # print('drug-drug network: {}\tedge number: {}'.format(drug_drug_adj.shape, drug_drug_adj.nnz))
-logging.info('{} adjs with edges >= 500'.format(1098))
-
-drug_drug_adj_list = sorted(drug_drug_adj_list, key=lambda x: x.nnz)[::-1][:964]
-drug_drug_adj_list = drug_drug_adj_list[:10]
-# drug_degree_list = map(lambda x: x.sum(axis=0).squeeze(), drug_drug_adj_list)
-print('# of filtered rel_types:%d' % len(drug_drug_adj_list))
-drug_degrees_list = [np.array(drug_adj.sum(axis=0)).squeeze() for drug_adj in drug_drug_adj_list]
-for i in range(10):
-    logging.info('shape:{}\t{} match {}'.format(drug_drug_adj_list[i].shape, drug_drug_adj_list[i].nnz,
-                                                np.sum(drug_degrees_list[i])))
-print()
-print('Done data loading')
+print('gene_adj: {}'.format(gene_adj.shape))
+print('gene_degrees: {}'.format(gene_degrees.shape))
+print('gene_drug_adj: {}\tdrug_gene_adj: {}'.format(gene_drug_adj.shape, drug_gene_adj.shape))
+print('drug_drug_adj_list: {}'.format(len(drug_drug_adj_list)))
+print('drug_drug_adj_list[0]: {}'.format(drug_drug_adj_list[0].shape))
 
 # data representation
 adj_mats_orig = {
@@ -263,8 +177,7 @@ feat = {
     1: drug_feat,
 }
 
-edge_type2dim = {k: [adj.shape for adj in adjs]
-                 for k, adjs in adj_mats_orig.items()}
+edge_type2dim = {k: [adj.shape for adj in adjs] for k, adjs in adj_mats_orig.items()}
 edge_type2decoder = {
     (0, 0): 'bilinear',
     (0, 1): 'bilinear',
@@ -276,11 +189,11 @@ edge_types = {k: len(v) for k, v in adj_mats_orig.items()}
 num_edge_types = sum(edge_types.values())
 print("Edge types:", "%d" % num_edge_types)
 
-# ##########################################################
+###########################################################
 #
 # Settings and placeholders
 #
-# ##########################################################
+###########################################################
 
 flags = tf.app.flags
 FLAGS = flags.FLAGS
@@ -289,8 +202,7 @@ flags.DEFINE_float('learning_rate', 0.001, 'Initial learning rate.')
 flags.DEFINE_integer('epochs', 50, 'Number of epochs to train.')
 flags.DEFINE_integer('hidden1', 64, 'Number of units in hidden layer 1.')
 flags.DEFINE_integer('hidden2', 32, 'Number of units in hidden layer 2.')
-flags.DEFINE_float('weight_decay', 0,
-                   'Weight for L2 loss on embedding matrix.')
+flags.DEFINE_float('weight_decay', 0, 'Weight for L2 loss on embedding matrix.')
 flags.DEFINE_float('dropout', 0.1, 'Dropout rate (1 - keep probability).')
 flags.DEFINE_float('max_margin', 0.1, 'Max margin parameter in hinge loss')
 flags.DEFINE_integer('batch_size', 512, 'minibatch size.')
@@ -345,11 +257,11 @@ sess = tf.Session()
 sess.run(tf.global_variables_initializer())
 feed_dict = {}
 
-##########################################################
-
+###########################################################
+#
 # Train model
-
-##########################################################
+#
+###########################################################
 
 print("Train model")
 for epoch in range(FLAGS.epochs):
@@ -358,8 +270,7 @@ for epoch in range(FLAGS.epochs):
     itr = 0
     while not minibatch.end():
         # Construct feed dictionary
-        feed_dict = minibatch.next_minibatch_feed_dict(
-            placeholders=placeholders)
+        feed_dict = minibatch.next_minibatch_feed_dict(placeholders=placeholders)
         feed_dict = minibatch.update_feed_dict(
             feed_dict=feed_dict,
             dropout=FLAGS.dropout,
@@ -372,16 +283,14 @@ for epoch in range(FLAGS.epochs):
         train_cost = outs[1]
         batch_edge_type = outs[2]
 
-        # if itr % PRINT_PROGRESS_EVERY == 0:
-        if itr % 1 == 0:
+        if itr % PRINT_PROGRESS_EVERY == 0:
             val_auc, val_auprc, val_apk = get_accuracy_scores(
                 minibatch.val_edges, minibatch.val_edges_false,
                 minibatch.idx2edge_type[minibatch.current_edge_type_idx])
 
             print("Epoch:", "%04d" % (epoch + 1), "Iter:", "%04d" % (itr + 1), "Edge:", "%04d" % batch_edge_type,
                   "train_loss=", "{:.5f}".format(train_cost),
-                  "val_roc=", "{:.5f}".format(
-                      val_auc), "val_auprc=", "{:.5f}".format(val_auprc),
+                  "val_roc=", "{:.5f}".format(val_auc), "val_auprc=", "{:.5f}".format(val_auprc),
                   "val_apk=", "{:.5f}".format(val_apk), "time=", "{:.5f}".format(time.time() - t))
 
         itr += 1
@@ -392,10 +301,7 @@ for et in range(num_edge_types):
     roc_score, auprc_score, apk_score = get_accuracy_scores(
         minibatch.test_edges, minibatch.test_edges_false, minibatch.idx2edge_type[et])
     print("Edge type=", "[%02d, %02d, %02d]" % minibatch.idx2edge_type[et])
-    print("Edge type:", "%04d" %
-          et, "Test AUROC score", "{:.5f}".format(roc_score))
-    print("Edge type:", "%04d" %
-          et, "Test AUPRC score", "{:.5f}".format(auprc_score))
-    print("Edge type:", "%04d" %
-          et, "Test AP@k score", "{:.5f}".format(apk_score))
+    print("Edge type:", "%04d" % et, "Test AUROC score", "{:.5f}".format(roc_score))
+    print("Edge type:", "%04d" % et, "Test AUPRC score", "{:.5f}".format(auprc_score))
+    print("Edge type:", "%04d" % et, "Test AP@k score", "{:.5f}".format(apk_score))
     print()
