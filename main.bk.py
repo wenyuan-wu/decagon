@@ -5,7 +5,11 @@ from itertools import combinations
 import time
 import os
 
-import tensorflow as tf
+# import tensorflow as tf
+import tensorflow.compat.v1 as tf
+tf.compat.v1.disable_eager_execution()
+
+
 import numpy as np
 import networkx as nx
 import scipy.sparse as sp

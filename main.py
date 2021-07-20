@@ -5,7 +5,10 @@ from itertools import combinations
 import time
 import os
 
-import tensorflow as tf
+# import tensorflow as tf
+import tensorflow.compat.v1 as tf
+tf.compat.v1.disable_eager_execution()
+
 import numpy as np
 import networkx as nx
 import scipy.sparse as sp
@@ -122,6 +125,13 @@ ppi_pd = pd.read_csv(data_path+'bio-decagon-ppi.csv')
 tarAll_pd = pd.read_csv(data_path+'bio-decagon-targets-all.csv')
 
 
+print("combo_pd:\n", combo_pd)
+print("")
+print("ppi_pd:\n", ppi_pd)
+print("")
+print("tarAll_pd:\n", tarAll_pd)
+print("")
+
 
 # build vocab
 
@@ -133,13 +143,25 @@ def build_vocab(words):
             vocab[word] = len(vocab)
     return vocab
 
+# gene_list = list(ppi_pd['Gene 1'].unique()) + list(ppi_pd['Gene 2'].unique())
+# drug_list = list(combo_pd['STITCH 1'].unique()) + list(combo_pd['STITCH 2'].unique())
+# print(gene_list)
+
+
 gene_list = list(ppi_pd['Gene 1'].unique()) + list(ppi_pd['Gene 2'].unique())
 drug_list = list(combo_pd['STITCH 1'].unique()) + list(combo_pd['STITCH 2'].unique())
+gene_list_2 = list(tarAll_pd['Gene'].unique())
+drug_list_2 = list(tarAll_pd['STITCH'].unique())
+
+print(len(gene_list))
+print(len(gene_list_2))
 
 # gene_list = gene_list[:1000]
 # drug_list = drug_list[:1000]
 gene_vocab = build_vocab(gene_list)
 drug_vocab = build_vocab(drug_list)
+
+print(gene_vocab)
 
 # stat
 n_genes = len(gene_vocab)
@@ -181,6 +203,7 @@ print()
 
 ################# build gene-drug net #################
 stitch_list, gene_list = tarAll_pd['STITCH'].tolist(), tarAll_pd['Gene'].tolist()
+print(len(gene_list))
 data_list, drug_idx_list, gene_idx_list = [], [], []
 for u, v in zip(stitch_list, gene_list):
     u, v = drug_vocab.get(u, -1), gene_vocab.get(v, -1)
@@ -189,6 +212,11 @@ for u, v in zip(stitch_list, gene_list):
     data_list.append(1)
     drug_idx_list.append(u)
     gene_idx_list.append(v)
+
+# print(gene_idx_list)
+# print(drug_idx_list)
+# print(data_list)
+
 gene_drug_adj = sp.csr_matrix((data_list, (gene_idx_list, drug_idx_list)))
 drug_gene_adj = gene_drug_adj.transpose(copy=True)
 print("gene_drug_adj" , gene_drug_adj.shape)

@@ -108,3 +108,6 @@ data/*
 
 # not to ignore
 !data/data_download.sh
+
+# macos
+.DS_Store
