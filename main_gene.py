@@ -148,14 +148,15 @@ def build_vocab(words):
 # print(gene_list)
 
 
-gene_list = list(ppi_pd['Gene 1'].unique()) + list(ppi_pd['Gene 2'].unique())
-drug_list = list(combo_pd['STITCH 1'].unique()) + list(combo_pd['STITCH 2'].unique())
+gene_list = list(ppi_pd['Gene 1'].unique()) + list(ppi_pd['Gene 2'].unique()) + list(tarAll_pd['Gene'].unique())
+drug_list = list(combo_pd['STITCH 1'].unique()) + list(combo_pd['STITCH 2'].unique()) + list(tarAll_pd['STITCH'].unique())
 gene_list_2 = list(tarAll_pd['Gene'].unique())
 drug_list_2 = list(tarAll_pd['STITCH'].unique())
 
 print(len(gene_list))
+print(len(set(gene_list)))
 print(len(gene_list_2))
-
+print(len(set(gene_list_2)))
 # gene_list = gene_list[:1000]
 # drug_list = drug_list[:1000]
 gene_vocab = build_vocab(gene_list)

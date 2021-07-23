@@ -146,6 +146,7 @@ print(len(drug_degrees_list))
 
 print("drug_drug_adj", drug_gene_adj.shape)
 print("gene_adj", gene_adj.shape)
+print("gene_drug_adj", gene_drug_adj.shape)
 
 print("=" * 40)
 

@@ -143,13 +143,14 @@ def build_vocab(words):
             vocab[word] = len(vocab)
     return vocab
 
-# gene_list = list(ppi_pd['Gene 1'].unique()) + list(ppi_pd['Gene 2'].unique())
-# drug_list = list(combo_pd['STITCH 1'].unique()) + list(combo_pd['STITCH 2'].unique())
-# print(gene_list)
-
 
 gene_list = list(ppi_pd['Gene 1'].unique()) + list(ppi_pd['Gene 2'].unique())
 drug_list = list(combo_pd['STITCH 1'].unique()) + list(combo_pd['STITCH 2'].unique())
+# print(gene_list)
+
+
+# gene_list = list(ppi_pd['Gene 1'].unique()) + list(ppi_pd['Gene 2'].unique()) + list(tarAll_pd['Gene'].unique())
+# drug_list = list(combo_pd['STITCH 1'].unique()) + list(combo_pd['STITCH 2'].unique()) + list(tarAll_pd['STITCH'].unique())
 gene_list_2 = list(tarAll_pd['Gene'].unique())
 drug_list_2 = list(tarAll_pd['STITCH'].unique())
 
@@ -161,7 +162,7 @@ print(len(gene_list_2))
 gene_vocab = build_vocab(gene_list)
 drug_vocab = build_vocab(drug_list)
 
-print(gene_vocab)
+# print(gene_vocab)
 
 # stat
 n_genes = len(gene_vocab)
@@ -185,10 +186,15 @@ def pk_load(file_path):
 # TODO: # of gene unmatch
 
 ################# build gene-gene net #################
+# gene_stitch_list = set(tarAll_pd['Gene'].tolist())
+# print(f"gene_stich_list: {len(gene_stitch_list)}")  # 7795
 gene1_list, gene2_list = ppi_pd['Gene 1'].tolist(), ppi_pd['Gene 2'].tolist()
 data_list, gene_idx1_list, gene_idx2_list = [], [], []
 for u, v in zip(gene1_list, gene2_list):
+    # filter out
+    # if u in gene_stitch_list and v in gene_stitch_list:
     u, v = gene_vocab.get(u, -1), gene_vocab.get(v, -1)
+    # doesn't take any effects?
     if u == -1 or v == -1:
         continue
     data_list.extend([1, 1])
@@ -202,24 +208,49 @@ gene_degrees = np.array(gene_adj.sum(axis=0)).squeeze()
 print()
 
 ################# build gene-drug net #################
+gene_ppi_list = set(list(ppi_pd['Gene 1'].unique()) + list(ppi_pd['Gene 2'].unique()))
+print(f"gene_ppi_list: {len(gene_ppi_list)}")  #19081
+
+
+
+print("fml")
+# gene_adj = gene_adj[:19056, :19056]
+print(gene_adj.shape)
+# print(gene_stitch_list.issubset(gene_ppi_list))
+
 stitch_list, gene_list = tarAll_pd['STITCH'].tolist(), tarAll_pd['Gene'].tolist()
-print(len(gene_list))
+# print(len(set(gene_list)))
+# print(len(set(gene_ppi_list)))
 data_list, drug_idx_list, gene_idx_list = [], [], []
 for u, v in zip(stitch_list, gene_list):
-    u, v = drug_vocab.get(u, -1), gene_vocab.get(v, -1)
-    if u == -1 or v == -1:
-        continue
-    data_list.append(1)
-    drug_idx_list.append(u)
-    gene_idx_list.append(v)
+    if v in gene_ppi_list:
+        u, v = drug_vocab.get(u, -1), gene_vocab.get(v, -1)
+        if u == -1 or v == -1:
+            continue
+        data_list.append(1)
+        drug_idx_list.append(u)
+        gene_idx_list.append(v)
 
-# print(gene_idx_list)
-# print(drug_idx_list)
-# print(data_list)
+print(len(gene_idx_list))
+print(len(drug_idx_list))
+print(len(data_list))
 
 gene_drug_adj = sp.csr_matrix((data_list, (gene_idx_list, drug_idx_list)))
-drug_gene_adj = gene_drug_adj.transpose(copy=True)
+# drug_gene_adj = gene_drug_adj.transpose(copy=True)
 print("gene_drug_adj" , gene_drug_adj.shape)
+
+print("FML!")
+# tmp_data_list = [0] * 25
+# tmp_gene_idx_list = [0] * 25
+# tmp_drug_idx_list = [0] * 25
+# tmp_array = sp.csr_matrix((tmp_data_list, (tmp_gene_idx_list, tmp_drug_idx_list)))
+tmp_array = np.zeros([25, 645])
+print(tmp_array.shape)
+gene_drug_adj = sp.vstack([gene_drug_adj, tmp_array]).tocsr()
+print(gene_drug_adj.shape)
+print(type(gene_drug_adj))
+drug_gene_adj = gene_drug_adj.transpose(copy=True)
+
 
 #logging.info('gene_drug_adj: {}'.format(gene_drug_adj.shape))
 # logging.info('drug_gene_adj: {}'.format(drug_gene_adj.shape))
@@ -249,6 +280,9 @@ for key, value in se_dict.items():
     # print('Side Effect: {}'.format(key))
     # print('drug-drug network: {}\tedge number: {}'.format(drug_drug_adj.shape, drug_drug_adj.nnz))
 logging.info('{} adjs with edges >= 500'.format(1098))
+
+
+
 
 print("drug_drug_adj", drug_drug_adj.shape)
 print("gene_adj", gene_adj.shape)
@@ -284,7 +318,7 @@ degrees = {
 }
 
 # featureless (genes)
-gene_feat = sp.identity(n_genes)
+gene_feat = sp.identity(19081)
 gene_nonzero_feat, gene_num_feat = gene_feat.shape
 gene_feat = preprocessing.sparse_to_tuple(gene_feat.tocoo())
 
