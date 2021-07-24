@@ -207,32 +207,23 @@ print()
 stitch_list, gene_list = tarAll_pd['STITCH'].tolist(), tarAll_pd['Gene'].tolist()
 data_list, drug_idx_list, gene_idx_list = [], [], []
 for u, v in zip(stitch_list, gene_list):
-    if v in gene_ppi_list:
-        u, v = drug_vocab.get(u, -1), gene_vocab.get(v, -1)
-        if u == -1 or v == -1:
-            continue
-        data_list.append(1)
-        drug_idx_list.append(u)
-        gene_idx_list.append(v)
-
-print(len(gene_idx_list))
-print(len(drug_idx_list))
-print(len(data_list))
+    # if v in gene_ppi_list:
+    u, v = drug_vocab.get(u, -1), gene_vocab.get(v, -1)
+    if u == -1 or v == -1:
+        continue
+    data_list.append(1)
+    drug_idx_list.append(u)
+    gene_idx_list.append(v)
 
 gene_drug_adj = sp.csr_matrix((data_list, (gene_idx_list, drug_idx_list)))
 # drug_gene_adj = gene_drug_adj.transpose(copy=True)
-print("gene_drug_adj" , gene_drug_adj.shape)
 
-print("FML!")
-# tmp_data_list = [0] * 25
-# tmp_gene_idx_list = [0] * 25
-# tmp_drug_idx_list = [0] * 25
-# tmp_array = sp.csr_matrix((tmp_data_list, (tmp_gene_idx_list, tmp_drug_idx_list)))
+################# reshaping csr matrices to make them multipliable #################
+print("reshaping...")
 tmp_array = np.zeros([25, 645])
-print(tmp_array.shape)
+# print(tmp_array.shape)
 gene_drug_adj = sp.vstack([gene_drug_adj, tmp_array]).tocsr()
-print(gene_drug_adj.shape)
-print(type(gene_drug_adj))
+# print(gene_drug_adj.shape)
 drug_gene_adj = gene_drug_adj.transpose(copy=True)
 
 
@@ -265,12 +256,6 @@ for key, value in se_dict.items():
     # print('drug-drug network: {}\tedge number: {}'.format(drug_drug_adj.shape, drug_drug_adj.nnz))
 logging.info('{} adjs with edges >= 500'.format(1098))
 
-
-
-
-print("drug_drug_adj", drug_drug_adj.shape)
-print("gene_adj", gene_adj.shape)
-
 drug_drug_adj_list = sorted(drug_drug_adj_list, key=lambda x: x.nnz)[::-1][:964]
 drug_drug_adj_list = drug_drug_adj_list[:10]
 # drug_degree_list = map(lambda x: x.sum(axis=0).squeeze(), drug_drug_adj_list)
@@ -281,13 +266,10 @@ for i in range(10):
                                                 np.sum(drug_degrees_list[i])))
 print()
 print('Done data loading')
+print("gene_adj", gene_adj.shape)
+print("gene_drug_adj", gene_drug_adj.shape)
+print("drug_drug_adj", drug_drug_adj.shape)
 
-
-print("=" * 40)
-print("THIS!")
-print(drug_drug_adj_list)
-print(len(drug_degrees_list))
-print("=" * 40)
 
 # data representation
 adj_mats_orig = {
@@ -302,7 +284,7 @@ degrees = {
 }
 
 # featureless (genes)
-gene_feat = sp.identity(19081)
+gene_feat = sp.identity(n_genes)
 gene_nonzero_feat, gene_num_feat = gene_feat.shape
 gene_feat = preprocessing.sparse_to_tuple(gene_feat.tocoo())
 
