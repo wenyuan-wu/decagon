@@ -20,8 +20,8 @@ from decagon.deep.model import DecagonModel
 from decagon.deep.minibatch import EdgeMinibatchIterator
 from decagon.utility import rank_metrics, preprocessing
 import logging
-from tqdm import tqdm
-import pickle
+# from tqdm import tqdm
+# import pickle
 from collections import defaultdict
 
 logger = logging.getLogger(__name__)
@@ -124,17 +124,15 @@ combo_pd = pd.read_csv(data_path+'bio-decagon-combo.csv')
 ppi_pd = pd.read_csv(data_path+'bio-decagon-ppi.csv')
 tarAll_pd = pd.read_csv(data_path+'bio-decagon-targets-all.csv')
 
-
-print("combo_pd:\n", combo_pd)
-print("")
-print("ppi_pd:\n", ppi_pd)
-print("")
-print("tarAll_pd:\n", tarAll_pd)
-print("")
+# print("combo_pd:\n", combo_pd)
+# print("")
+# print("ppi_pd:\n", ppi_pd)
+# print("")
+# print("tarAll_pd:\n", tarAll_pd)
+# print("")
 
 
 # build vocab
-
 
 def build_vocab(words):
     vocab = defaultdict(int)
@@ -146,23 +144,16 @@ def build_vocab(words):
 
 gene_list = list(ppi_pd['Gene 1'].unique()) + list(ppi_pd['Gene 2'].unique())
 drug_list = list(combo_pd['STITCH 1'].unique()) + list(combo_pd['STITCH 2'].unique())
-# print(gene_list)
 
-
+# debugging lines
 # gene_list = list(ppi_pd['Gene 1'].unique()) + list(ppi_pd['Gene 2'].unique()) + list(tarAll_pd['Gene'].unique())
 # drug_list = list(combo_pd['STITCH 1'].unique()) + list(combo_pd['STITCH 2'].unique()) + list(tarAll_pd['STITCH'].unique())
-gene_list_2 = list(tarAll_pd['Gene'].unique())
-drug_list_2 = list(tarAll_pd['STITCH'].unique())
+# gene_list_2 = list(tarAll_pd['Gene'].unique())
+# drug_list_2 = list(tarAll_pd['STITCH'].unique())
 
-print(len(gene_list))
-print(len(gene_list_2))
-
-# gene_list = gene_list[:1000]
-# drug_list = drug_list[:1000]
 gene_vocab = build_vocab(gene_list)
 drug_vocab = build_vocab(drug_list)
 
-# print(gene_vocab)
 
 # stat
 n_genes = len(gene_vocab)
@@ -173,17 +164,17 @@ print('# of drug %d' % n_drugs)
 print('# of rel_types %d' % n_drugdrug_rel_types)
 
 
-def pk_save(obj, file_path):
-    return pickle.dump(obj, open(file_path, 'wb'))
+# def pk_save(obj, file_path):
+#     return pickle.dump(obj, open(file_path, 'wb'))
+#
+#
+# def pk_load(file_path):
+#     if os.path.exists(file_path):
+#         return pickle.load(open(file_path, 'rb'))
+#     else:
+#         return None
 
-
-def pk_load(file_path):
-    if os.path.exists(file_path):
-        return pickle.load(open(file_path, 'rb'))
-    else:
-        return None
-
-# TODO: # of gene unmatch
+# # of gene unmatched problem solved
 
 ################# build gene-gene net #################
 # gene_stitch_list = set(tarAll_pd['Gene'].tolist())
@@ -208,19 +199,12 @@ gene_degrees = np.array(gene_adj.sum(axis=0)).squeeze()
 print()
 
 ################# build gene-drug net #################
-gene_ppi_list = set(list(ppi_pd['Gene 1'].unique()) + list(ppi_pd['Gene 2'].unique()))
-print(f"gene_ppi_list: {len(gene_ppi_list)}")  #19081
-
-
-
-print("fml")
-# gene_adj = gene_adj[:19056, :19056]
-print(gene_adj.shape)
+# gene_ppi_list = set(list(ppi_pd['Gene 1'].unique()) + list(ppi_pd['Gene 2'].unique()))
+# print(f"gene_ppi_list: {len(gene_ppi_list)}")  #19081
+# print(gene_adj.shape)
 # print(gene_stitch_list.issubset(gene_ppi_list))
 
 stitch_list, gene_list = tarAll_pd['STITCH'].tolist(), tarAll_pd['Gene'].tolist()
-# print(len(set(gene_list)))
-# print(len(set(gene_ppi_list)))
 data_list, drug_idx_list, gene_idx_list = [], [], []
 for u, v in zip(stitch_list, gene_list):
     if v in gene_ppi_list:
