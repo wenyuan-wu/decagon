@@ -1,0 +1,156 @@
+Epoch: 0050 Iter: 18897 Edge: 0000 train_loss= 7.77753 val_roc= 0.85153 val_auprc= 0.84081 val_apk= 0.85523 time= 0.28477
+Epoch: 0050 Iter: 18898 Edge: 0002 train_loss= 1.19826 val_roc= 0.86920 val_auprc= 0.90034 val_apk= 0.82566 time= 0.13330
+Epoch: 0050 Iter: 18899 Edge: 0003 train_loss= 2.74489 val_roc= 0.98080 val_auprc= 0.98991 val_apk= 0.97960 time= 0.13796
+Epoch: 0050 Iter: 18900 Edge: 0001 train_loss= 5.69248 val_roc= 0.83994 val_auprc= 0.81230 val_apk= 0.75073 time= 0.59961
+Epoch: 0050 Iter: 18901 Edge: 0000 train_loss= 6.17379 val_roc= 0.85114 val_auprc= 0.84036 val_apk= 0.85444 time= 0.25120
+Epoch: 0050 Iter: 18902 Edge: 0002 train_loss= 0.96943 val_roc= 0.86920 val_auprc= 0.90034 val_apk= 0.82566 time= 0.12959
+Epoch: 0050 Iter: 18903 Edge: 0003 train_loss= 3.32244 val_roc= 0.98080 val_auprc= 0.98991 val_apk= 0.97960 time= 0.13910
+Epoch: 0050 Iter: 18904 Edge: 0001 train_loss= 5.53195 val_roc= 0.83999 val_auprc= 0.81306 val_apk= 0.75393 time= 0.59419
+Epoch: 0050 Iter: 18905 Edge: 0000 train_loss= 6.55900 val_roc= 0.85153 val_auprc= 0.84090 val_apk= 0.85444 time= 0.24808
+Epoch: 0050 Iter: 18906 Edge: 0002 train_loss= 2.02980 val_roc= 0.86960 val_auprc= 0.90047 val_apk= 0.82566 time= 0.12983
+Epoch: 0050 Iter: 18907 Edge: 0003 train_loss= 3.90140 val_roc= 0.98080 val_auprc= 0.98991 val_apk= 0.97960 time= 0.13977
+Epoch: 0050 Iter: 18908 Edge: 0001 train_loss= 5.90782 val_roc= 0.84014 val_auprc= 0.81386 val_apk= 0.75702 time= 0.59213
+Epoch: 0050 Iter: 18909 Edge: 0000 train_loss= 10.69021 val_roc= 0.85202 val_auprc= 0.84132 val_apk= 0.85444 time= 0.28102
+Epoch: 0050 Iter: 18910 Edge: 0002 train_loss= 0.86053 val_roc= 0.86960 val_auprc= 0.90047 val_apk= 0.82566 time= 0.13285
+Epoch: 0050 Iter: 18911 Edge: 0003 train_loss= 4.47886 val_roc= 0.98080 val_auprc= 0.98991 val_apk= 0.97960 time= 0.13837
+Epoch: 0050 Iter: 18912 Edge: 0001 train_loss= 7.86401 val_roc= 0.84077 val_auprc= 0.81475 val_apk= 0.75814 time= 0.60286
+Epoch: 0050 Iter: 18913 Edge: 0000 train_loss= 8.33823 val_roc= 0.85295 val_auprc= 0.84260 val_apk= 0.85584 time= 0.28001
+Epoch: 0050 Iter: 18914 Edge: 0002 train_loss= 1.84755 val_roc= 0.87120 val_auprc= 0.90091 val_apk= 0.82566 time= 0.13234
+Epoch: 0050 Iter: 18915 Edge: 0003 train_loss= 4.06076 val_roc= 0.98080 val_auprc= 0.98991 val_apk= 0.97960 time= 0.13746
+Epoch: 0050 Iter: 18916 Edge: 0001 train_loss= 6.87654 val_roc= 0.84170 val_auprc= 0.81561 val_apk= 0.75895 time= 0.60726
+Epoch: 0050 Iter: 18917 Edge: 0000 train_loss= 7.56077 val_roc= 0.85432 val_auprc= 0.84410 val_apk= 0.85667 time= 0.25193
+Epoch: 0050 Iter: 18918 Edge: 0002 train_loss= 1.30379 val_roc= 0.87120 val_auprc= 0.90064 val_apk= 0.82527 time= 0.12961
+Epoch: 0050 Iter: 18919 Edge: 0003 train_loss= 4.41784 val_roc= 0.98080 val_auprc= 0.98991 val_apk= 0.97960 time= 0.13835
+Epoch: 0050 Iter: 18920 Edge: 0001 train_loss= 6.35545 val_roc= 0.84322 val_auprc= 0.81779 val_apk= 0.76193 time= 0.58329
+Epoch: 0050 Iter: 18921 Edge: 0000 train_loss= 8.42794 val_roc= 0.85603 val_auprc= 0.84654 val_apk= 0.85848 time= 0.28243
+Epoch: 0050 Iter: 18922 Edge: 0002 train_loss= 1.81710 val_roc= 0.87160 val_auprc= 0.90077 val_apk= 0.82527 time= 0.13306
+Epoch: 0050 Iter: 18923 Edge: 0003 train_loss= 2.61765 val_roc= 0.98080 val_auprc= 0.98991 val_apk= 0.97960 time= 0.13946
+Epoch: 0050 Iter: 18924 Edge: 0001 train_loss= 7.14226 val_roc= 0.84395 val_auprc= 0.81856 val_apk= 0.76268 time= 0.55462
+Epoch: 0050 Iter: 18925 Edge: 0000 train_loss= 8.42858 val_roc= 0.85686 val_auprc= 0.84731 val_apk= 0.85817 time= 0.28439
+Epoch: 0050 Iter: 18926 Edge: 0002 train_loss= 1.77074 val_roc= 0.87120 val_auprc= 0.90040 val_apk= 0.82491 time= 0.13399
+Epoch: 0050 Iter: 18927 Edge: 0003 train_loss= 4.71939 val_roc= 0.98080 val_auprc= 0.98991 val_apk= 0.97960 time= 0.13829
+Epoch: 0050 Iter: 18928 Edge: 0001 train_loss= 6.74355 val_roc= 0.84430 val_auprc= 0.81862 val_apk= 0.76334 time= 0.59440
+Epoch: 0050 Iter: 18929 Edge: 0000 train_loss= 8.60597 val_roc= 0.85760 val_auprc= 0.84842 val_apk= 0.85926 time= 0.28333
+Epoch: 0050 Iter: 18930 Edge: 0002 train_loss= 2.02390 val_roc= 0.87120 val_auprc= 0.90040 val_apk= 0.82491 time= 0.13265
+Epoch: 0050 Iter: 18931 Edge: 0003 train_loss= 3.07680 val_roc= 0.98080 val_auprc= 0.98991 val_apk= 0.97960 time= 0.13900
+Epoch: 0050 Iter: 18932 Edge: 0000 train_loss= 8.00914 val_roc= 0.85867 val_auprc= 0.85000 val_apk= 0.86113 time= 0.28081
+Optimization finished!
+Edge type= [00, 00, 00]
+Edge type: 0000 Test AUROC score 0.86840
+Edge type: 0000 Test AUPRC score 0.83400
+Edge type: 0000 Test AP@k score 0.81094
+
+Edge type= [00, 00, 01]
+Edge type: 0001 Test AUROC score 0.88312
+Edge type: 0001 Test AUPRC score 0.86687
+Edge type: 0001 Test AP@k score 0.84463
+
+Edge type= [00, 01, 00]
+Edge type: 0002 Test AUROC score 0.84880
+Edge type: 0002 Test AUPRC score 0.90888
+Edge type: 0002 Test AP@k score 0.81122
+
+Edge type= [01, 00, 00]
+Edge type: 0003 Test AUROC score 0.97920
+Edge type: 0003 Test AUPRC score 0.95303
+Edge type: 0003 Test AP@k score 0.91529
+
+Edge type= [01, 01, 00]
+Edge type: 0004 Test AUROC score 0.78840
+Edge type: 0004 Test AUPRC score 0.69714
+Edge type: 0004 Test AP@k score 0.49766
+
+Edge type= [01, 01, 01]
+Edge type: 0005 Test AUROC score 0.77040
+Edge type: 0005 Test AUPRC score 0.68190
+Edge type: 0005 Test AP@k score 0.47436
+
+Edge type= [01, 01, 02]
+Edge type: 0006 Test AUROC score 0.71560
+Edge type: 0006 Test AUPRC score 0.64483
+Edge type: 0006 Test AP@k score 0.40958
+
+Edge type= [01, 01, 03]
+Edge type: 0007 Test AUROC score 0.78760
+Edge type: 0007 Test AUPRC score 0.68224
+Edge type: 0007 Test AP@k score 0.48569
+
+Edge type= [01, 01, 04]
+Edge type: 0008 Test AUROC score 0.89280
+Edge type: 0008 Test AUPRC score 0.88551
+Edge type: 0008 Test AP@k score 0.71975
+
+Edge type= [01, 01, 05]
+Edge type: 0009 Test AUROC score 0.84520
+Edge type: 0009 Test AUPRC score 0.78425
+Edge type: 0009 Test AP@k score 0.60092
+
+Edge type= [01, 01, 06]
+Edge type: 0010 Test AUROC score 0.73640
+Edge type: 0010 Test AUPRC score 0.68722
+Edge type: 0010 Test AP@k score 0.45051
+
+Edge type= [01, 01, 07]
+Edge type: 0011 Test AUROC score 0.68760
+Edge type: 0011 Test AUPRC score 0.58033
+Edge type: 0011 Test AP@k score 0.34429
+
+Edge type= [01, 01, 08]
+Edge type: 0012 Test AUROC score 0.76240
+Edge type: 0012 Test AUPRC score 0.70127
+Edge type: 0012 Test AP@k score 0.48772
+
+Edge type= [01, 01, 09]
+Edge type: 0013 Test AUROC score 0.82040
+Edge type: 0013 Test AUPRC score 0.73295
+Edge type: 0013 Test AP@k score 0.57227
+
+Edge type= [01, 01, 10]
+Edge type: 0014 Test AUROC score 0.84200
+Edge type: 0014 Test AUPRC score 0.80911
+Edge type: 0014 Test AP@k score 0.62146
+
+Edge type= [01, 01, 11]
+Edge type: 0015 Test AUROC score 0.80120
+Edge type: 0015 Test AUPRC score 0.78367
+Edge type: 0015 Test AP@k score 0.56196
+
+Edge type= [01, 01, 12]
+Edge type: 0016 Test AUROC score 0.91360
+Edge type: 0016 Test AUPRC score 0.88140
+Edge type: 0016 Test AP@k score 0.74089
+
+Edge type= [01, 01, 13]
+Edge type: 0017 Test AUROC score 0.77840
+Edge type: 0017 Test AUPRC score 0.73238
+Edge type: 0017 Test AP@k score 0.52528
+
+Edge type= [01, 01, 14]
+Edge type: 0018 Test AUROC score 0.79400
+Edge type: 0018 Test AUPRC score 0.71490
+Edge type: 0018 Test AP@k score 0.53113
+
+Edge type= [01, 01, 15]
+Edge type: 0019 Test AUROC score 0.80480
+Edge type: 0019 Test AUPRC score 0.75879
+Edge type: 0019 Test AP@k score 0.56795
+
+Edge type= [01, 01, 16]
+Edge type: 0020 Test AUROC score 0.82840
+Edge type: 0020 Test AUPRC score 0.79203
+Edge type: 0020 Test AP@k score 0.58255
+
+Edge type= [01, 01, 17]
+Edge type: 0021 Test AUROC score 0.76040
+Edge type: 0021 Test AUPRC score 0.67410
+Edge type: 0021 Test AP@k score 0.46398
+
+Edge type= [01, 01, 18]
+Edge type: 0022 Test AUROC score 0.79160
+Edge type: 0022 Test AUPRC score 0.73340
+Edge type: 0022 Test AP@k score 0.57113
+
+Edge type= [01, 01, 19]
+Edge type: 0023 Test AUROC score 0.81000
+Edge type: 0023 Test AUPRC score 0.77710
+Edge type: 0023 Test AP@k score 0.60165
