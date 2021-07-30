@@ -1,5 +1,7 @@
 from __future__ import division
 from __future__ import print_function
+
+import collections
 from operator import itemgetter
 from itertools import combinations
 import time
@@ -249,17 +251,42 @@ for u, v, se in zip(drug1_list, drug2_list, se_list):
     se_dict[se]['col'].extend([v, u])
     se_dict[se]['data'].extend([1, 1])
 
+# recovering the edge types of the corresponding side effects
+edg_se_idx = {}
+counter = 0
+nnz_counter = 0
 for key, value in se_dict.items():
     drug_drug_adj = sp.csr_matrix((value['data'], (value['row'], value['col'])), shape=(n_drugs, n_drugs))
     drug_drug_adj_list.append(drug_drug_adj)
+    # print(f"counter: {counter}")
     # print('Side Effect: {}'.format(key))
-    # print('drug-drug network: {}\tedge number: {}'.format(drug_drug_adj.shape, drug_drug_adj.nnz))
-logging.info('{} adjs with edges >= 500'.format(1098))
+    try:
+        edg_se_idx[drug_drug_adj.nnz].append(key)
+    except KeyError:
+        edg_se_idx[drug_drug_adj.nnz] = [key]
 
-drug_drug_adj_list = sorted(drug_drug_adj_list, key=lambda x: x.nnz)[::-1][:964]
-drug_drug_adj_list = drug_drug_adj_list[:10]
+    # print('drug-drug network: {}\tedge number: {}'.format(drug_drug_adj.shape, drug_drug_adj.nnz))
+    if drug_drug_adj.nnz >= 500:
+        nnz_counter += 1
+    counter += 1
+
+logging.info('{} adjs with edges >= 500'.format(nnz_counter))
+# print(len(drug_drug_adj_list))
+# print(len(edg_se_idx.keys()))
+# od = collections.OrderedDict(sorted(edg_se_idx.items(), reverse=True))
+# counter_od = 0
+# for k, v in od.items():
+#     print(f"key: {k}")
+#     print(f"value: {v}")
+#     counter_od += 1
+#     if counter_od >= 10:
+#         break
+
+drug_drug_adj_list = sorted(drug_drug_adj_list, key=lambda x: x.nnz, reverse=True)[:nnz_counter]
+# drug_drug_adj_list = sorted(drug_drug_adj_list, key=lambda x: x.nnz)[::-1][:964]
+# drug_drug_adj_list = drug_drug_adj_list[:10]
 # drug_degree_list = map(lambda x: x.sum(axis=0).squeeze(), drug_drug_adj_list)
-print('# of filtered rel_types:%d' % len(drug_drug_adj_list))
+print('# of filtered rel_types: %d' % len(drug_drug_adj_list))
 drug_degrees_list = [np.array(drug_adj.sum(axis=0)).squeeze() for drug_adj in drug_drug_adj_list]
 for i in range(10):
     logging.info('shape:{}\t{} match {}'.format(drug_drug_adj_list[i].shape, drug_drug_adj_list[i].nnz,
@@ -276,7 +303,7 @@ adj_mats_orig = {
     (0, 0): [gene_adj, gene_adj.transpose(copy=True)],
     (0, 1): [gene_drug_adj],
     (1, 0): [drug_gene_adj],
-    (1, 1): drug_drug_adj_list + [x.transpose(copy=True) for x in drug_drug_adj_list],
+    (1, 1): drug_drug_adj_list + [x.transpose(copy=True) for x in drug_drug_adj_list],  # 20 edge types
 }
 degrees = {
     0: [gene_degrees, gene_degrees],
